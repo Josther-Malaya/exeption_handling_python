@@ -15,7 +15,6 @@ class CalculatorGUI:
     def create_widgets(self):
         self.entry = tk.Entry(self.root, font="Arial 20")
         self.entry.grid(row=0, column=0, columnspan=4, sticky="nsew", padx=10, pady=10)
-
         buttons = [
             ["(", ")", "%", "//"],
             ["7", "8", "9", "/"],
@@ -24,24 +23,19 @@ class CalculatorGUI:
             ["0", ".", "=", "+"],
             ["C"]
         ]
-
         for r, row in enumerate(buttons, start=1):
             for c, btn in enumerate(row):
                 button = tk.Button(self.root, text=btn, font="Arial 15")
                 button.grid(row=r, column=c, sticky="nsew")
 
                 button.bind("<Button-1>", self.on_click)
-
-        # Make grid expandable
-        for i in range(6):  # rows
+        for i in range(6):
             self.root.grid_rowconfigure(i, weight=1)
-
-        for i in range(4):  # columns
+        for i in range(4):
             self.root.grid_columnconfigure(i, weight=1)
-
+            
     def on_click(self, event):
         text = event.widget.cget("text")
-
         if text == "=":
             self.calculate()
         elif text == "C":
