@@ -1,55 +1,75 @@
 import tkinter as tk
 from tkinter import messagebox
 
-# Function to handle button clicks
-def click(event):
-    current = entry.get()
-    text = event.widget.cget("text")
-
-    if text == "=":
+class CalculatorEngine:
+    def evaluate(self, expression):
         try:
-            # Evaluate the expression safely
-            result = eval(current)
-            entry.delete(0, tk.END)
-            entry.insert(tk.END, str(result))
+            result = eval(expression)
+            return str(result)
         except ZeroDivisionError:
-            messagebox.showerror("Error", "Cannot divide by zero!")
-            entry.delete(0, tk.END)
+            raise ZeroDivisionError("Cannot divide by zero!")
         except Exception:
-            messagebox.showerror("Error", "Invalid input!")
-            entry.delete(0, tk.END)
+            raise ValueError("Invalid input!")
 
-    elif text == "C":
-        entry.delete(0, tk.END)
-    else:
-        entry.insert(tk.END, text)
 
-# Main window
-root = tk.Tk()
-root.title("Calculator")
-root.geometry("300x400")
+class CalculatorGUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("OOP Calculator (Separated Logic)")
+        self.root.geometry("300x400")
 
-# Entry field
-entry = tk.Entry(root, font="Arial 20")
-entry.pack(fill=tk.BOTH, ipadx=8, pady=10, padx=10)
+        self.engine = CalculatorEngine()
 
-# Buttons layout
-buttons = [
-    ["7", "8", "9", "/"],
-    ["4", "5", "6", "*"],
-    ["1", "2", "3", "-"],
-    ["0", ".", "=", "+"],
-    ["C"]
-]
+        self.create_widgets()
 
-# Create buttons
-for row in buttons:
-    frame = tk.Frame(root)
-    frame.pack(expand=True, fill="both")
-    for btn in row:
-        button = tk.Button(frame, text=btn, font="Arial 15")
-        button.pack(side="left", expand=True, fill="both")
-        button.bind("<Button-1>", click)
+    def create_widgets(self):
+        self.entry = tk.Entry(self.root, font="Arial 20")
+        self.entry.pack(fill=tk.BOTH, ipadx=8, pady=10, padx=10)
 
-# Run the application
-root.mainloop()
+        buttons = [
+            ["7", "8", "9", "/"],
+            ["4", "5", "6", "*"],
+            ["1", "2", "3", "-"],
+            ["0", ".", "=", "+"],
+            ["C"]
+        ]
+
+        for row in buttons:
+            frame = tk.Frame(self.root)
+            frame.pack(expand=True, fill="both")
+
+            for btn in row:
+                button = tk.Button(frame, text=btn, font="Arial 15")
+                button.pack(side="left", expand=True, fill="both")
+                button.bind("<Button-1>", self.on_click)
+
+    def on_click(self, event):
+        text = event.widget.cget("text")
+
+        if text == "=":
+            self.calculate()
+        elif text == "C":
+            self.clear()
+        else:
+            self.entry.insert(tk.END, text)
+
+    def calculate(self):
+        expression = self.entry.get()
+        try:
+            result = self.engine.evaluate(expression)
+            self.entry.delete(0, tk.END)
+            self.entry.insert(tk.END, result)
+        except ZeroDivisionError as e:
+            messagebox.showerror("Error", str(e))
+            self.clear()
+        except ValueError as e:
+            messagebox.showerror("Error", str(e))
+            self.clear()
+
+    def clear(self):
+        self.entry.delete(0, tk.END)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = CalculatorGUI(root)
+    root.mainloop()
