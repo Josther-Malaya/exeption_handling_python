@@ -6,7 +6,7 @@ class CalculatorGUI:
 
     def __init__(self, root):
         self.root = root
-        self.root.title("OOP Calculator (Modular)")
+        self.root.title("JM's Calculator")
         self.root.geometry("300x400")
         self.engine = CalculatorEngine()
         self.create_widgets()
